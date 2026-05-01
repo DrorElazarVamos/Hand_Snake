@@ -5,6 +5,9 @@ import pygame as pg
 from pygame.locals import *
 from Snake import DIRECTION
 from Board import Block
+import threading
+import cv2 as cv
+from Hand_Control import Hand_controll
 
 CELL_COLOR = {
     Block.Clear:      (30,  30,  30),
@@ -14,6 +17,10 @@ CELL_COLOR = {
     Block.Next_Fruit: (30, 30, 30)
 }
 GRID_COLOR = (50, 50, 50)
+
+TEST = 1
+GAME = 2
+BOT = 3
 
 WAIT_FOR_KEY = 1000
 
@@ -30,11 +37,15 @@ def game(board_size: int):
     GBorad = Board.Board(board_size)
     GSnake = Snake.Snake(GBorad)
 
+    hand_ctrl = Hand_controll(GSnake)
+    hand_thread = threading.Thread(target=hand_ctrl.run, daemon=True)
+    hand_thread.start()
+
     cell_size = 400 // board_size
     win_size  = cell_size * board_size
 
     pg.init()
-    screen = pg.display.set_mode((win_size, win_size), pg.RESIZABLE)
+    screen = pg.display.set_mode((win_size * 2, win_size), pg.RESIZABLE)
     pg.display.set_caption("Snake")
     
     AUTO_MOVE = pg.USEREVENT + 1
@@ -66,12 +77,20 @@ def game(board_size: int):
             
         screen.fill(GRID_COLOR)
         draw_board(screen, GBorad, cell_size)
+
+        cam_frame = hand_ctrl._display_frame
+        if cam_frame is not None:
+            cam_resized = cv.resize(cam_frame, (win_size, win_size))
+            cam_rgb = cv.cvtColor(cam_resized, cv.COLOR_BGR2RGB)
+            cam_surface = pg.image.frombuffer(cam_rgb.tobytes(), (win_size, win_size), 'RGB')
+            screen.blit(cam_surface, (win_size, 0))
+
         pg.display.flip()
     
         
    
-def start():
-    game(10)
+def start(mode: int):
+    game(10,mode)
         
 if __name__=="__main__":
-    start()
+    start(TEST)
