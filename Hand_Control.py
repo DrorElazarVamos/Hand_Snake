@@ -3,17 +3,13 @@ import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 import urllib.request
-import os
 import Snake
 from collections import deque
-
-TWO_HAND = 2
-LEFT_HAND = 1
-RIGHT_HAND = -1
-NO_HAND = 0
-
-MODEL_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "hand_landmarker.task")
+from constants import (
+    TWO_HAND, LEFT_HAND, RIGHT_HAND, NO_HAND,
+    MODEL_URL, MODEL_PATH,
+    HAND_CENTER_SAVE, DERIVATIVE_THRESHOLD,
+)
 
 
 def _ensure_model():
@@ -24,8 +20,8 @@ def _ensure_model():
 
 
 class Hand_controll:
-    HAND_CENTER_SAVE = 5
-    DERIVATIVE_THRESHOLD = 5  # pixels of movement to register a direction change
+    HAND_CENTER_SAVE     = HAND_CENTER_SAVE
+    DERIVATIVE_THRESHOLD = DERIVATIVE_THRESHOLD
 
     def __init__(self, snake: Snake):
         self._hand_center = deque(maxlen=self.HAND_CENTER_SAVE)

@@ -8,6 +8,7 @@ from Board import Block
 import threading
 import cv2 as cv
 from Hand_Control import Hand_controll
+from constants import GRID_COLOR, TEST, GAME, BOT, WAIT_FOR_KEY
 
 CELL_COLOR = {
     Block.Clear:      (30,  30,  30),
@@ -16,13 +17,6 @@ CELL_COLOR = {
     Block.Fruit:      (220,  30,  30),
     Block.Next_Fruit: (30, 30, 30)
 }
-GRID_COLOR = (50, 50, 50)
-
-TEST = 1
-GAME = 2
-BOT = 3
-
-WAIT_FOR_KEY = 1000
 
 def draw_board(surface: pg.Surface, board: Board.Board, cell: int) -> None:
     for row in range(board._n):

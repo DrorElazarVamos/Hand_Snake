@@ -2,6 +2,7 @@
 from enum import Enum
 from collections import deque
 from Board import Board
+from constants import SNAKE_START_LENGTH
 
 class DIRECTION(Enum):
     RIGHT = 'd'
@@ -9,8 +10,6 @@ class DIRECTION(Enum):
     UP    = 'w'
     DOWN  = 's'
     CRUSE = None  # stay in the same direction
-
-SNAKE_START_LENGTH = 3
 
 class Snake:
     def __init__(self, board: Board) -> None:
