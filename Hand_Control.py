@@ -3,21 +3,21 @@ import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 import urllib.request
+import threading
 import Snake
+import os
 from collections import deque
 from constants import (
     TWO_HAND, LEFT_HAND, RIGHT_HAND, NO_HAND,
     MODEL_URL, MODEL_PATH,
-    HAND_CENTER_SAVE, DERIVATIVE_THRESHOLD,
+    HAND_CENTER_SAVE, DERIVATIVE_THRESHOLD, WAIT_FOR_KEY
 )
-
 
 def _ensure_model():
     if not os.path.exists(MODEL_PATH):
         print("Downloading hand landmarker model...")
         urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
         print("Model downloaded.")
-
 
 class Hand_controll:
     HAND_CENTER_SAVE     = HAND_CENTER_SAVE
@@ -30,6 +30,7 @@ class Hand_controll:
         self._snake = snake
         self._cnt_hand = NO_HAND
         self._display_frame = None
+        self._frame_lock = threading.Lock()
         self._last_direction = Snake.DIRECTION.CRUSE
 
     def display_frame(self, frame, hand_landmarks, R_L):
@@ -107,7 +108,8 @@ class Hand_controll:
                 cv.putText(frame, "No Hand", (10, 40),
                            cv.FONT_HERSHEY_SIMPLEX, 1.0, (100, 100, 255), 2)
 
-            self._display_frame = frame
+            with self._frame_lock:
+                self._display_frame = frame
 
             if self._cnt_hand in {LEFT_HAND, RIGHT_HAND}:
                 self.monitor_hand()
@@ -128,20 +130,14 @@ class Hand_controll:
         if abs(self._D_x) >= abs(self._D_y):
             if self._D_x > t:
                 self._last_direction = Snake.DIRECTION.RIGHT
-                self._snake.move(Snake.DIRECTION.RIGHT)
             elif self._D_x < -t:
                 self._last_direction = Snake.DIRECTION.LEFT
-                self._snake.move(Snake.DIRECTION.LEFT)
             else:
                 self._last_direction = Snake.DIRECTION.CRUSE
-                self._snake.move(Snake.DIRECTION.CRUSE)
         else:
             if self._D_y > t:
                 self._last_direction = Snake.DIRECTION.DOWN
-                self._snake.move(Snake.DIRECTION.DOWN)
             elif self._D_y < -t:
                 self._last_direction = Snake.DIRECTION.UP
-                self._snake.move(Snake.DIRECTION.UP)
             else:
                 self._last_direction = Snake.DIRECTION.CRUSE
-                self._snake.move(Snake.DIRECTION.CRUSE)

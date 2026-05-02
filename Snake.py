@@ -28,17 +28,21 @@ class Snake:
         board.set_snake(self)
 
     @property
+    def last_direction(self):
+        return self._last_dir
+
+    @property
     def alive(self) -> bool:
         return self._alive
 
-    def move(self, direction: DIRECTION) -> None:
+    def move(self, direction: DIRECTION, call_by_cam: bool = False) -> None:
         if not self._alive:
             return
         if direction == DIRECTION.CRUSE:
             direction = self._last_dir
         else:
             self._last_dir = direction
-        self._board.update_snake(direction)
+        self._board.update_snake(direction,call_by_cam)
 
     def eat(self) -> None:
         self._fruit_counter += 1

@@ -102,7 +102,7 @@ class Board:
             )
             self._monitor_thread.start()
 
-    def update_snake(self, direction) -> None:
+    def update_snake(self, direction,source: bool ) -> None:
         from Snake import DIRECTION
 
         if not self._snake or not self._snake._alive:
@@ -113,8 +113,7 @@ class Board:
         if   direction == DIRECTION.RIGHT: dx =  1
         elif direction == DIRECTION.LEFT:  dx = -1
         elif direction == DIRECTION.UP:    dy = -1
-        elif direction == DIRECTION.DOWN:  dy = 1
-
+        elif direction == DIRECTION.DOWN:  dy = 1                
         new_head = (hx + dx, hy + dy)
         nx, ny = new_head
 

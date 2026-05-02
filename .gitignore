@@ -27,3 +27,6 @@ Thumbs.db
 
 # MediaPipe model (downloaded at runtime)
 hand_landmarker.task
+
+#contants.py
+contants_accurate.py

@@ -67,12 +67,13 @@ def game(board_size: int):
                     GSnake.move(DIRECTION.CRUSE)
 
             if event.type == AUTO_MOVE:
-                GSnake.move(DIRECTION.CRUSE)
+                GSnake.move(hand_ctrl._last_direction)
             
         screen.fill(GRID_COLOR)
         draw_board(screen, GBorad, cell_size)
 
-        cam_frame = hand_ctrl._display_frame
+        with hand_ctrl._frame_lock:
+            cam_frame = hand_ctrl._display_frame
         if cam_frame is not None:
             cam_resized = cv.resize(cam_frame, (win_size, win_size))
             cam_rgb = cv.cvtColor(cam_resized, cv.COLOR_BGR2RGB)
@@ -84,7 +85,7 @@ def game(board_size: int):
         
    
 def start(mode: int):
-    game(10,mode)
+    game(10)
         
 if __name__=="__main__":
-    start(TEST)
+    start(GAME)
