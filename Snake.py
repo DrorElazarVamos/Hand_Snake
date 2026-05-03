@@ -11,6 +11,14 @@ class DIRECTION(Enum):
     DOWN  = 's'
     CRUSE = None  # stay in the same direction
 
+OPPOSITE = {                                                                              
+        DIRECTION.RIGHT: DIRECTION.LEFT,                                                     
+        DIRECTION.LEFT:  DIRECTION.RIGHT,                                                    
+        DIRECTION.UP:    DIRECTION.DOWN,                                                       
+        DIRECTION.DOWN:  DIRECTION.UP,                                                         
+        DIRECTION.CRUSE: DIRECTION.CRUSE,                                                      
+      }
+
 class Snake:
     def __init__(self, board: Board) -> None:
         self._length        = SNAKE_START_LENGTH
@@ -28,7 +36,7 @@ class Snake:
         board.set_snake(self)
 
     @property
-    def last_direction(self):
+    def last_direction(self) -> DIRECTION:
         return self._last_dir
 
     @property

@@ -5,6 +5,7 @@ from mediapipe.tasks.python import vision
 import urllib.request
 import threading
 import Snake
+from Snake import DIRECTION, OPPOSITE
 import os
 from collections import deque
 from constants import (
@@ -31,7 +32,7 @@ class Hand_controll:
         self._cnt_hand = NO_HAND
         self._display_frame = None
         self._frame_lock = threading.Lock()
-        self._last_direction = Snake.DIRECTION.CRUSE
+        self._direction = Snake.DIRECTION.CRUSE
 
     def display_frame(self, frame, hand_landmarks, R_L):
         h, w, _ = frame.shape
@@ -45,7 +46,7 @@ class Hand_controll:
         cv.putText(frame, label, (cx + 16, cy + 6),
                    cv.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
 
-        dir_name = self._last_direction.name
+        dir_name = self._direction.name
         cv.putText(frame, f"Dir: {dir_name}", (10, 40),
                    cv.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 0), 2)
 
@@ -125,19 +126,24 @@ class Hand_controll:
         self._D_x = newest[1] - oldest[1]
         self._D_y = newest[2] - oldest[2]
 
+    def prevent_knot(self, next_direction: DIRECTION) -> DIRECTION:                                         
+        if OPPOSITE[self._snake.last_direction] == next_direction:                                    
+            return DIRECTION.CRUSE                                                                          
+        return next_direction            
+  
     def monitor_hand(self):
         t = self.DERIVATIVE_THRESHOLD
         if abs(self._D_x) >= abs(self._D_y):
             if self._D_x > t:
-                self._last_direction = Snake.DIRECTION.RIGHT
+                self._direction = self.prevent_knot(DIRECTION.RIGHT)
             elif self._D_x < -t:
-                self._last_direction = Snake.DIRECTION.LEFT
+                self._direction = self.prevent_knot(DIRECTION.LEFT)
             else:
-                self._last_direction = Snake.DIRECTION.CRUSE
+                self._direction = self.prevent_knot(DIRECTION.CRUSE)
         else:
             if self._D_y > t:
-                self._last_direction = Snake.DIRECTION.DOWN
+                self._direction = self.prevent_knot(DIRECTION.DOWN)
             elif self._D_y < -t:
-                self._last_direction = Snake.DIRECTION.UP
+                self._direction = self.prevent_knot(DIRECTION.UP)
             else:
-                self._last_direction = Snake.DIRECTION.CRUSE
+                self._direction = self.prevent_knot(DIRECTION.CRUSE)
